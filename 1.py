@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import messagebox
+import random
 class Tic_toe:
     def __init__(self):
         #Поле
@@ -9,10 +10,11 @@ class Tic_toe:
         self.root.protocol('WM_DELETE_WINDOW', self.on_delet)
         #Игровые переменные
         self.pole1=[]
-        self.X_O=[1]
-        self.O_X=[1, 2, 3, 4, 5, 6, 7, 8, 9]
-        self.but111=None
-        self.but222 =None
+        self.count_x_o=1
+        self.O_X=[0, 1, 2, 3, 4, 5, 6, 7, 8]
+        self.but_tab=None
+        self.characteristic="None"
+        self.win_kode = ((0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6), (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6))
         #запуск меню
         self.show_main_menu()
     def clear_window(self):#Удаление предыдущих виджетов
@@ -29,69 +31,142 @@ class Tic_toe:
         but2.place(x=560, y=200)
     def show_levels_menu(self):#выбор уровней сложностей
         self.clear_window()
-        but3 = Button(self.root, width=15, height=5, text="уровень 1", command=self.start_bot_game)
+        but3 = Button(self.root, width=15, height=5, text="уровень 1", command=self.start_bot_game_easy)
         but3.place(x=400, y=300)
-        but4 = Button(self.root, width=15, height=5, text="уровень 2", command=self.start_bot_game)
+        but4 = Button(self.root, width=15, height=5, text="уровень 2", command=self.start_bot_game_medium)
         but4.place(x=550, y=300)
-        but5 = Button(self.root, width=15, height=5, text="уровень 3", command=self.start_bot_game)
+        but5 = Button(self.root, width=15, height=5, text="уровень 3", command=self.start_bot_game_hard)
         but5.place(x=700, y=300)
     def draw_navigation_top(self):#верхнии кнопки
-        du = Button(self.root, text="играть с другом", command=self.start_game_with_friend)
-        du.place(x=637, y=0)
-        du1 = Button(self.root, text="назад", command=self.show_levels_menu)
-        du1.place(x=777, y=0)
+        but6 = Button(self.root, text="играть с другом", command=self.start_game_with_friend)
+        but6.place(x=637, y=0)
+        but7 = Button(self.root, text="назад", command=self.show_levels_menu)
+        but7.place(x=777, y=0)
     def start_game_with_friend(self):  # игра с другом
         self.clear_window()
+        self.characteristic = "None"
         self.init_game_board()
-        du = Button(self.root, text="уровни", command=self.show_levels_menu)
-        du.place(x=637, y=0)
-    def start_bot_game(self):#игра против нейросети
+        but8 = Button(self.root, text="уровни", command=self.show_levels_menu)
+        but8.place(x=637, y=0)
+    def start_bot_game_easy(self):#игра против бота легкого
         self.clear_window()
         self.draw_navigation_top()
+        self.characteristic = "Easy"
+        self.init_game_board()
+    def start_bot_game_medium(self):#игра против бота среднего
+        self.clear_window()
+        self.draw_navigation_top()
+        self.characteristic = "Medium"
+        self.init_game_board()
+    def start_bot_game_hard(self):#игра против бота сложного
+        self.clear_window()
+        self.draw_navigation_top()
+        self.characteristic="Hard"
         self.init_game_board()
     def init_game_board(self):#игровое поле
-        self.X_O = [1]
-        self.O_X = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        self.count_x_o = 1
+        self.O_X = [0, 1, 2, 3, 4, 5, 6, 7, 8]
         self.pole1 = [Button(self.root, width=15, height=5, command=lambda x=h: self.make_move(x)) for h in range(9)]
-        positions = [(400, 300), (550, 300), (700, 300),(400, 400), (550, 400), (700, 400),(400, 200), (550, 200), (700, 200)]
+        positions = [(400, 200), (550, 200), (700, 200),(400, 300), (550, 300), (700, 300),(400, 400), (550, 400), (700, 400)]
         for idx,(x,y) in enumerate(positions):
             self.pole1[idx].place(x=x,y=y)
         # Информационное табло
-        self.but111 = Button(self.root, width=54, height=5, state="disabled")
-        self.but111.place(x=400, y=30)
+        self.but_tab = Button(self.root, width=54, height=5, state="disabled")
+        self.but_tab.place(x=400, y=30)
         # сброс игры
-        self.but222 = Button(self.root, text="новая игра", command=self.reset_game)
-        self.but222.place(x=533, y=0)
+        but_reset = Button(self.root, text="новая игра", command=self.reset_game)
+        but_reset.place(x=533, y=0)
     def make_move(self, idx):#механика нажатия клавишь
-        while True:
-            if len(self.X_O) % 2 != 0:
-                self.pole1[idx].config(text="X", state="disabled")
-                self.X_O.append(2)
-                self.O_X[idx] = "X"
-                break
+        if self.characteristic=="None":
+            if self.count_x_o % 2 != 0:
+                self.x(idx)
             else:
-                self.pole1[idx].config(text="O", state="disabled")
-                self.X_O.append(2)
-                self.O_X[idx] = "O"
-                break
+                self.o(idx)
+        elif self.characteristic=="Hard":#Кривой надо исправить
+            self.x(idx)
+            if self.O_X.count("X")!=self.O_X.count("O"):
+                self.o(self.best_move())
+        elif self.characteristic=="Medium":
+            self.x(idx)
+            if random.random()<=0.6:
+                self.o(self.best_move())
+            else:
+                self.o(random.choice(self.is_cell_free()))
+        elif self.characteristic=="Easy":
+            self.x(idx)
+            if random.random() <= 0.3:
+                self.o(self.best_move())
+            else:
+                self.o(random.choice(self.is_cell_free()))
         if self.check_winner() != None:
-            self.but111.config(text=self.check_winner())
+            self.but_tab.config(text=self.check_winner())
+    def is_cell_free(self):#ищет свободные клетки
+        if self.check_winner() != None:
+            self.but_tab.config(text=self.check_winner())
+        return [i for i in self.O_X if i != "X" and i != "O"]
+    def best_move(self):#находин наилучший ход
+        if self.check_winner() != None:
+            self.but_tab.config(text=self.check_winner())
+        best_socer = -float("inf")
+        move = None
+        for j in range(0,9):
+            count = 0
+            for i in self.win_kode:
+                if j!=self.O_X[j]:
+                    continue
+                if j in i:
+                    count += 1
+            if count > best_socer:
+                best_socer = count
+                move = j
+        for j in self.win_kode:#выйгрыш или поражение
+            count_lose=0
+            count_win=0
+            free_cell=[]
+            blocking=[]
+            for i in j:
+                if self.O_X[i]=="X":
+                    count_lose+=1
+                elif self.O_X[i]=="O":
+                    count_win+=1
+                else:
+                    free_cell.append(i)
+                if (count_win==2 and len(free_cell)==1):
+                    move=free_cell[0]
+                    return move
+                elif (count_lose==2 and len(free_cell)==1):
+                    move=free_cell[0]
+                    blocking.append(move)
+        if len(blocking)>0:
+            return blocking[0]
+        return move
+    def x(self,idx):
+        if  self.O_X[idx]!="X" and self.O_X[idx]!="O":
+            self.pole1[idx].config(text="X", state="disabled")
+            self.count_x_o+=1
+            self.O_X[idx] = "X"
+    def o(self,idx):
+        if self.check_winner() != None:
+            self.but_tab.config(text=self.check_winner())
+            idx=None
+        if self.O_X[idx] != "X" and self.O_X[idx] != "O":
+            self.pole1[idx].config(text="O", state="disabled")
+            self.count_x_o+=1
+            self.O_X[idx] = "O"
     def check_winner(self):#проверка выйграша
-        win_kode = ((0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6), (1, 4, 7), (2, 5, 8), (1, 3, 8), (1, 5, 6))
-        for combo in win_kode:
+        for combo in self.win_kode:
             if self.O_X[combo[0]] == self.O_X[combo[1]] == self.O_X[combo[2]]:
-                for h in range(9):
-                    self.pole1[h].config(state="disabled")
+                for idx in range(9):
+                    self.pole1[idx].config(state="disabled")
                 return "Победил:", self.O_X[combo[0]]
-        if len(self.X_O) == 10:
+        if self.count_x_o == 10:
             return "ничья"
     def reset_game(self):#сброс игры
-        for i in range(1, 10):
-            self.O_X[i - 1] = i
-            self.pole1[i - 1].config(text="", state="normal")
-        self.but111.config(text='')
-        for i in range(len(self.X_O) - 1):
-            self.X_O.remove(2)
+        for idx in range(0, 9):
+            self.O_X[idx] = idx
+            self.pole1[idx].config(text="", state="normal")
+        self.but_tab.config(text='')
+        self.count_x_o=1
     def run(self):#запуск игры
         self.root.mainloop()
 if __name__=="__main__":#запуск кода
