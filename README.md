@@ -2,6 +2,7 @@
 Tic-Tac-Toe with a GUI and three difficulty levels.
 I used the Tkinter library to create the GUI.
 ![Image Alt](https://github.com/Vladleks1/tic-tac-toe/blob/main/pole1.png?raw=true)
+
 Difficulty levels:
 Level 1 – simple bot: makes the optimal move with a 30% chance.
 Level 2 – medium bot: makes the optimal move with a 60% chance.
