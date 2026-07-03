@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import messagebox
 import random
 class Tic_toe:
     def __init__(self):
@@ -71,7 +72,7 @@ class Tic_toe:
             self.pole1[idx].place(x=x,y=y)
         # Информационное табло
         self.but_tab = Button(self.root, width=54, height=5, state="disabled")
-        self.but_tab.place(x=400, y=30)
+        self.but_tab.place(x=400, y=35)
         # сброс игры
         but_reset = Button(self.root, text="новая игра", command=self.reset_game)
         but_reset.place(x=533, y=0)
