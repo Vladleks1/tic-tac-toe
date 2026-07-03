@@ -7,3 +7,4 @@ Difficulty levels:
 Level 1 – simple bot: makes the optimal move with a 30% chance.
 Level 2 – medium bot: makes the optimal move with a 60% chance.
 Level 3 – hard bot: impossible to beat.
+![Image Alt](https://github.com/Vladleks1/tic-tac-toe/blob/main/levels.png?raw=true)
