@@ -1,5 +1,4 @@
 # tic-tac-toe
-2 репозиторий
 Tic-Tac-Toe with a GUI and three difficulty levels.
 I used the Tkinter library to create the GUI.
 
