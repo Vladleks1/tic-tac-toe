@@ -1,5 +1,4 @@
 from tkinter import *
-from tkinter import messagebox
 import random
 class Tic_toe:
     def __init__(self):
